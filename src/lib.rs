@@ -11,7 +11,8 @@ extern crate wee_alloc;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-use alloc::string::ToString;
+use alloc::string::{String, ToString};
+use panic::UnwrapWasm;
 use string::WasmString;
 use transpile::TranspileModule;
 
@@ -41,7 +42,8 @@ pub extern "C" fn hello(ptr: u32, len: u32) {
         .clone()
         .to_string();
     WasmString::from(&str).log();
-    let parse = TranspileModule::parse(str, "index.ts".into());
-    // WasmString::from("made it").log();
-    // let string: String = parse.into();
+    let parse =
+        TranspileModule::parse(str, "index.ts".into()).expect_wasm(|_| "parse failed".into());
+    let string: String = parse.into();
+    WasmString::from(&string).log();
 }

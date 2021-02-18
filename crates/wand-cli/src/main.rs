@@ -1,8 +1,3 @@
-//! Example of instantiating of instantiating a wasm module which uses WASI
-//! imports.
-
-// You can execute this example with `cargo run --example wasi`
-
 pub mod slice;
 pub mod traits;
 pub mod wasm;
@@ -23,11 +18,13 @@ fn main() -> anyhow::Result<()> {
         println!("{}", unsafe { WasmSlice::get_str(&caller.memory(), ptr) });
     })?;
 
-    let source = "function hello(): string { return 'hello' }".to_string();
+    let source: String = std::env::args()
+        .nth(1)
+        .expect("Pass the source as a string");
+
+    // let source = "function hello(): string { return 'hello' }".to_string();
 
     let module = linker.instantiate_module(BYTES)?;
-
-    println!("instantiated");
 
     let mem = module.memory();
     let len = source.len() as u32;

@@ -17,7 +17,7 @@ impl WasmEngine {
             .init();
 
         let mut config = Config::default();
-        // let config = config.cache_config_load_default()?;
+        let config = config.cache_config_load_default()?;
 
         let engine = Engine::new(&config);
         // let engine = Engine::default();
@@ -50,6 +50,7 @@ impl WasmEngine {
 
 pub struct WasmLinker {
     engine: Engine,
+    #[allow(unused)]
     start: Instant,
     linker: Linker,
 }
@@ -66,25 +67,19 @@ impl WasmLinker {
     }
 
     pub fn instantiate_module<'a>(&'a self, bytes: &'a [u8]) -> anyhow::Result<ModuleInstance> {
-        println!("instantiate_module {:?}", self.start.elapsed());
         let module = self.module(bytes)?;
-        println!("instantiate_module#instantiated {:?}", self.start.elapsed());
 
         self.instantiate(module)
     }
 
     pub fn module(&self, bytes: &[u8]) -> anyhow::Result<Module> {
-        println!("module#before-validate {:?}", self.start.elapsed());
         Module::validate(&self.engine, bytes)?;
-        println!("module#after-validate {:?}", self.start.elapsed());
 
         Module::new(&self.engine, bytes)
     }
 
     pub fn instantiate<'a>(&'a self, module: Module) -> anyhow::Result<ModuleInstance> {
-        println!("instantiate#before {:?}", self.start.elapsed());
         let instance = self.linker.instantiate(&module)?;
-        println!("instantiate#after {:?}", self.start.elapsed());
         ModuleInstance::instantiate(module, instance)
     }
 }
@@ -107,8 +102,6 @@ impl GetMemory for ModuleInstance {
 
 impl ModuleInstance {
     pub fn instantiate(module: Module, instance: Instance) -> anyhow::Result<ModuleInstance> {
-        println!("size: {}", instance.get_memory("memory").unwrap().size());
-
         Ok(ModuleInstance { module, instance })
     }
 
