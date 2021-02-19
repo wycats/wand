@@ -46,4 +46,15 @@ impl WasmString {
             log_str(transmute(*self));
         }
     }
+
+    pub fn transfer(string: String) -> u64 {
+        let wasm_string = WasmString {
+            ptr: string.as_ptr() as u32,
+            len: string.len() as u32,
+        };
+
+        core::mem::forget(string);
+
+        unsafe { transmute(wasm_string) }
+    }
 }

@@ -11,10 +11,10 @@ pub struct WasmEngine {
 
 impl WasmEngine {
     pub fn new() -> anyhow::Result<WasmEngine> {
-        tracing_subscriber::FmtSubscriber::builder()
-            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-            .with_ansi(true)
-            .init();
+        // tracing_subscriber::FmtSubscriber::builder()
+        //     .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        //     .with_ansi(true)
+        //     .init();
 
         let mut config = Config::default();
         let config = config.cache_config_load_default()?;

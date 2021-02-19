@@ -23,6 +23,7 @@ mod rewrite_ext;
 mod string;
 mod transpile;
 mod writer;
+use alloc::format;
 
 // #[global_allocator]
 // static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -36,14 +37,16 @@ pub fn allocate(len: usize) -> *mut u8 {
 }
 
 #[no_mangle]
-pub extern "C" fn hello(ptr: u32, len: u32) {
+pub extern "C" fn hello(ptr: u32, len: u32) -> u64 {
     let vec = unsafe { core::slice::from_raw_parts(ptr as *const u8, len as usize) };
+
     let str = unsafe { core::str::from_utf8_unchecked(vec) }
         .clone()
         .to_string();
-    WasmString::from(&str).log();
+
+    // WasmString::from(&str).log();
     let parse =
         TranspileModule::parse(str, "index.ts".into()).expect_wasm(|_| "parse failed".into());
     let string: String = parse.into();
-    WasmString::from(&string).log();
+    WasmString::transfer(string)
 }
